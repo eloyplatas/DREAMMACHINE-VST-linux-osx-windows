@@ -22,7 +22,7 @@ jobs:
           - name: windows-x64
             os: windows-latest
           - name: macos-universal
-            os: macos-14
+            os: macos-latest
           - name: linux-x64
             os: ubuntu-22.04
     runs-on: ${{ matrix.os }}
@@ -46,7 +46,8 @@ jobs:
           if [ "$RUNNER_OS" = "macOS" ]; then
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
           elif [ "$RUNNER_OS" = "Windows" ]; then
-            cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
+            # sin -G: CMake usa la versión de Visual Studio que tenga el runner
+            cmake -B build -A x64 -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
           else
             cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_MODULE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc"
           fi

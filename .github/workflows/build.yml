@@ -22,7 +22,7 @@ jobs:
           - name: windows-x64
             os: windows-latest
           - name: macos-universal
-            os: macos-latest
+            os: macos-15-intel   # Intel: los runners ARM suelen no tener capacidad; el binario sigue siendo universal
           - name: linux-x64
             os: ubuntu-22.04
     runs-on: ${{ matrix.os }}
@@ -115,6 +115,7 @@ jobs:
   # Guarda los binarios en la rama "builds" para poder descargarlos con git
   publish:
     needs: build
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -125,6 +126,7 @@ jobs:
         run: |
           git init -q out && cd out
           git checkout -q -b builds
-          cp ../dist/*.zip .
+          cp ../dist/*.zip . 2>/dev/null || true
+          ls *.zip
           git add . && git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "Binarios de ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" builds
